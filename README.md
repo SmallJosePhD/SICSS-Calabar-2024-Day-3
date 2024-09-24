@@ -40,6 +40,6 @@ The focus of this session is centred on the application of skills in R programmi
     ├── README.md
 
 
--   The the files in the [R Scripts folder](R Scripts/) to perform the analysis demonstrated during the session.
+-   The the files in the [R Scripts folder](R%20Scripts/) to perform the analysis demonstrated during the session.
 
 
