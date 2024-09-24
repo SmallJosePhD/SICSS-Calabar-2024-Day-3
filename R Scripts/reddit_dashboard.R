@@ -16,6 +16,7 @@ library(tidyr)
 library(shinythemes)
 library(rsconnect)
 library(DT)
+library(plotly)
 
 
 #'
@@ -123,7 +124,7 @@ body <- dashboardBody(
                   "The sentiments towards AI is more positive as ...",
                   solidHeader = TRUE,
                   width = 8,
-                  plotOutput("sentimentPlot", height = 300)),
+                  plotlyOutput("sentimentPlot", height = 300)),
               box(
                 title = "Period",
                 status = "primary",
@@ -207,22 +208,43 @@ ui <- dashboardPage(header,
 
 # Now Define the server logic
 server <- function(input, output) {
-  output$sentimentPlot <- renderPlot({
+  output$sentimentPlot <- renderPlotly({
     aggregate_scores <- comment_and_sentiments %>%
       filter(year == input$yearInput) %>%
       select(anger:positive) %>%
       summarise(across(everything(), sum))%>%
       pivot_longer(cols = everything(), names_to = "Sentiment", values_to = "Score")%>%
       mutate(Sentiment = str_to_sentence(Sentiment))
+
+    # ggplot(aggregate_scores,
+    #        aes(x = Sentiment, y = Score, fill = Sentiment)) +
+    #   geom_bar(stat = "identity") +
+    #   theme_minimal() +
+    #   labs(title = "Sentiment on AI Discussions on Reddit", x = "Sentiment", y = "Aggregate Score") +
+    #   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")  # Rotate x-axis labels
+    # 
+  # Create plotly bar plot with tooltips
+    #Set up color
+    mycolors <- c("red","green","blue","purple","darkorange","#950","pink","brown","skyblue","#FFC125")
     
-    ggplot(aggregate_scores,
-           aes(x = Sentiment, y = Score, fill = Sentiment)) +
-      geom_bar(stat = "identity") +
-      theme_minimal() +
-      labs(title = "Sentiment on AI Discussions on Reddit", x = "Sentiment", y = "Aggregate Score") +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")  # Rotate x-axis labels
-  })
-  
+    plot_ly(
+    aggregate_scores,
+    x = ~Sentiment,            # X-axis with sentiment labels
+    y = ~Score,                # Y-axis with the sentiment scores
+    type = 'bar',              # Bar chart type
+    #hoverinfo = 'text',        # Show text on hover
+    #text = ~paste("Sentiment:", Sentiment, "<br>Score:", Score),  # Hover text
+    marker = list(color = mycolors)  # Color based on sentiment
+  ) %>%
+    layout(
+      title = "Sentiment on AI Discussions on Reddit",
+      xaxis = list(title = "Sentiment"),
+      yaxis = list(title = "Aggregate Score"),
+      margin = list(b = 100),  # Add margin for rotated labels
+      showlegend = FALSE       # Remove legend
+    )
+})
+  #THis is the output for out second tab
   output$sentimentPlotB <- renderPlot({
     aggregate_scoresB <- comment_and_sentiments %>%
       filter(year == input$yearInput) %>%
@@ -237,8 +259,6 @@ server <- function(input, output) {
       labs(title = "Sentiment on AI Discussions on Reddit", x = "Sentiment", y = "Aggregate Score") +
       theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none")  # Rotate x-axis labels
   })
-  
-  
   
   output$threads <- renderValueBox({
     threads <- comment_and_sentiments %>%
