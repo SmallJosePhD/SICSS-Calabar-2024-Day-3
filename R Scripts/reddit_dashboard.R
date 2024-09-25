@@ -244,7 +244,7 @@ server <- function(input, output) {
       showlegend = FALSE       # Remove legend
     )
 })
-  #THis is the output for out second tab
+  #This is the output for out second tab
   output$sentimentPlotB <- renderPlot({
     aggregate_scoresB <- comment_and_sentiments %>%
       filter(year == input$yearInput) %>%
