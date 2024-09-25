@@ -14,7 +14,10 @@ install.packages(c("tidyverse",
                  "VOSONDash",
                  "shinydashboard",
                  "shinythemes",
-                 "stopwords"
+                 "stopwords",
+                 "rsconnect",
+                   "DT",
+                   "plotly"
                  ))
 
 #'1. `tidyverse` - The core tidyverse includes the packages that you're likely to use in everyday data analyses.
